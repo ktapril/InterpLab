@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>InterpLab — интерполяция</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header>
+  <a class="brand" href="#">∑ InterpLab</a>
+  <nav><a href="#lab">Лаборатория</a><a href="#theory">О методах</a></nav>
+</header>
+<main>
+  <section class="hero">
+    <p class="eyebrow">ИНТЕРАКТИВНАЯ ЛАБОРАТОРИЯ · ЧИСЛЕННЫЕ МЕТОДЫ</p>
+    <h1>Интерполяция<br><span>Лагранжа и Ньютона</span></h1>
+    <p class="lead">Исследуйте интерполяционные многочлены, наблюдайте за графиком и разбирайте вычисления по шагам.</p>
+    <a class="cta" href="#lab">Перейти к работе ↓</a>
+  </section>
+
+  <section id="lab" class="panel">
+    <div class="section-title">
+      <div><p class="eyebrow">РАБОЧАЯ ОБЛАСТЬ</p><h2>Исходные данные</h2></div>
+      <button id="example" class="secondary">Загрузить пример</button>
+    </div>
+    <p class="muted">Введите координаты узлов интерполяции. Значения X не должны повторяться.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>№</th><th>X</th><th>Y</th><th></th></tr></thead>
+        <tbody id="points"></tbody>
+      </table>
+    </div>
+    <div class="row between"><button id="add" class="secondary">＋ Добавить точку</button><span id="count" class="muted"></span></div>
+    <div class="controls">
+      <label>Точка вычисления X<input id="target" value="" placeholder="Введите X" inputmode="decimal"></label>
+      <label>Метод
+        <select id="method">
+          <option value="both">Сравнить оба метода</option>
+          <option value="lagrange">Метод Лагранжа</option>
+          <option value="newton">Метод Ньютона</option>
+        </select>
+      </label>
+      <button id="calculate" class="primary">Вычислить</button>
+    </div>
+    <p id="error" class="error" aria-live="polite"></p>
+  </section>
+
+  <section id="results" class="hidden">
+    <div class="section-title result-heading">
+      <div><p class="eyebrow">РЕЗУЛЬТАТ</p><h2>Визуализация</h2></div>
+      <span class="muted" id="result-summary"></span>
+    </div>
+    <div class="result-grid">
+      <article class="panel graph-panel">
+        <h3>График интерполяции</h3>
+        <div id="graph"></div>
+        <div id="legend" class="legend"></div>
+        <p class="graph-note">Кривые двух методов совпадают, поскольку оба способа строят один интерполяционный многочлен.</p>
+      </article>
+      <div id="answers"></div>
+    </div>
+    <article class="panel steps">
+      <p class="eyebrow">ХОД РЕШЕНИЯ</p><h3>Пошаговые вычисления</h3>
+      <div id="steps"></div>
+    </article>
+  </section>
+
+  <section id="theory" class="theory">
+    <p class="eyebrow">КРАТКАЯ СПРАВКА</p><h2>Два метода, одна задача</h2>
+    <div class="theory-grid">
+      <article class="panel">
+        <h3>Метод Лагранжа</h3>
+        <p>Многочлен строится как сумма произведений значений функции на базисные многочлены.</p>
+        <div class="formula">P(x) = Σ yᵢ · Lᵢ(x)</div>
+        <p class="formula-small">Lᵢ(x) = ∏ (x − xⱼ) / (xᵢ − xⱼ), где j ≠ i</p>
+      </article>
+      <article class="panel">
+        <h3>Метод Ньютона</h3>
+        <p>Многочлен записывается через разделённые разности и последовательно учитывает узлы интерполяции.</p>
+        <div class="formula">P(x) = f[x₀] + f[x₀,x₁](x−x₀) + …</div>
+        <p class="formula-small">Коэффициенты берутся из первой строки таблицы разделённых разностей.</p>
+      </article>
+    </div>
+  </section>
+</main>
+<footer>InterpLab <span>Учебный проект по численным методам</span></footer>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
