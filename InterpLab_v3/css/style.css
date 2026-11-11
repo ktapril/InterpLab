@@ -43,3 +43,22 @@ td input:focus,.controls input:focus,.controls select:focus{outline:2px solid #d
 footer{background:#fff;border-top:1px solid #e8edf4;padding:22px 5%;font-weight:700;color:#53617d;font-size:13px;display:flex;justify-content:space-between}
 footer span{font-weight:400;color:#9aa2b0}
 @media(max-width:700px){.controls,.result-grid,.theory-grid,.steps-grid.two-methods{grid-template-columns:1fr}.panel{padding:18px}.hero{padding:50px 0}footer{gap:8px;flex-direction:column}.section-title{align-items:flex-start;flex-direction:column}}
+.formula-render {
+  background: #f7f8fc;
+  padding: 18px;
+  border-radius: 10px;
+  margin-top: 10px;
+  overflow-x: auto;
+  color: #34425e;
+  font-size: 15px;
+}
+
+.formula-render mjx-container {
+  margin: 8px 0 !important;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.formula-render mjx-container[display="true"] {
+  text-align: left !important;
+}

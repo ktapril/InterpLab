@@ -19,8 +19,11 @@ export function newton(points,x){
   const c=points.map((p,i)=>table[0][i]);
   let value=c[n-1];
   for(let i=n-2;i>=0;i--)value=value*(x-points[i].x)+c[i];
-  const polynomial=c.map((v,i)=>`${fmt(v)}${points.slice(0,i).map(p=>`(x − ${fmt(p.x)})`).join('')}`).join(' + ');
-  steps.push(
+const polynomial = c.map((v,i) => {
+  const factors = points.slice(0,i)
+    .map(p => `(x-${fmt(p.x)})`).join('');
+  return `${fmt(v)}${factors}`;
+}).join(' + ');  steps.push(
     {title:'Многочлен Ньютона',text:'Коэффициенты многочлена берём из первой строки таблицы разделённых разностей.',math:`P(x) = ${polynomial}`},
     {title:'Вычисление в заданной точке',text:'Подставляем X и последовательно выполняем вычисления.',math:`P(${fmt(x)}) = ${fmt(value)}`}
   );

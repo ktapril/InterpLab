@@ -33,8 +33,10 @@
   <section id="lab" class="panel">
     <div class="section-title">
       <div><p class="eyebrow">РАБОЧАЯ ОБЛАСТЬ</p><h2>Исходные данные</h2></div>
-      <button id="example" class="secondary">Загрузить пример</button>
-    </div>
+<div class="row">
+  <button id="clear" class="secondary">Очистить</button>
+  <button id="example" class="secondary">Загрузить пример</button>
+</div>    </div>
     <p class="muted">Введите координаты узлов интерполяции. Значения X не должны повторяться.</p>
     <div class="table-wrap">
       <table>
@@ -92,6 +94,15 @@
         <div class="formula">P(x) = f[x₀] + f[x₀,x₁](x−x₀) + …</div>
         <p class="formula-small">Коэффициенты берутся из первой строки таблицы разделённых разностей.</p>
       </article>
+      <article class="panel">
+  <h3>Область применения</h3>
+  <p>
+    Интерполяция применяется для приближённого восстановления
+    функции по известным значениям в заданных узлах.
+    Методы Лагранжа и Ньютона позволяют получить один
+    и тот же интерполяционный многочлен разными способами.
+  </p>
+</article>
     </div>
   </section>
 </main>

@@ -9,8 +9,7 @@ export function lagrange(points,x){
     points.forEach((q,j)=>{
       if(i!==j){
         numerator*=x-q.x; denominator*=p.x-q.x;
-        factors.push(`(${fmt(x)} − ${fmt(q.x)}) / (${fmt(p.x)} − ${fmt(q.x)})`);
-      }
+factors.push(`\\frac{(${fmt(x)}-${fmt(q.x)})}{(${fmt(p.x)}-${fmt(q.x)})}`);      }
     });
     const basis=numerator/denominator,part=p.y*basis;
     value+=part;

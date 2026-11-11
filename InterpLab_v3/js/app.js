@@ -9,6 +9,17 @@ let rows=[
   {x:'',y:''}
 ];
 
+document.querySelector('#clear').onclick = () => {
+  rows = [
+    {x:'',y:''},
+    {x:'',y:''}
+  ];
+
+  document.querySelector('#target').value = '';
+  render();
+  clearResults();
+};
+
 function render(){
   body.innerHTML='';
   rows.forEach((p,i)=>{
@@ -52,11 +63,19 @@ function renderSteps(results){
         <div class="step">
           <h4>${i+1}. ${s.title}</h4>
           <p>${s.text}</p>
-          ${s.math?`<div class="math">${s.math}</div>`:''}
-          ${s.table?`<div class="table-wrap"><table class="math-table"><thead><tr>${s.table.headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${s.table.rows.map(row=>`<tr>${row.map(cell=>`<td>${cell}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`:''}
+${s.math ? `
+  <div class="math formula-render">
+    \\[${s.math.replace(/\n/g, '\\\\')}\\]
+  </div>
+` : ''}          ${s.table?`<div class="table-wrap"><table class="math-table"><thead><tr>${s.table.headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${s.table.rows.map(row=>`<tr>${row.map(cell=>`<td>${cell}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`:''}
         </div>`).join('')}
     </section>`).join('');
   document.querySelector('#steps').innerHTML=`<div class="steps-grid ${results.length===2?'two-methods':'one-method'}">${stepsHtml}</div>`;
+if (window.MathJax) {
+  MathJax.typesetPromise([
+    document.querySelector('#steps')
+  ]);
+}
 }
 
 document.querySelector('#calculate').onclick=()=>{
