@@ -20,8 +20,16 @@ export function lagrange(points,x){
       math:`L${i}(${fmt(x)}) = ${factors.join(' · ')} = ${fmt(basis)}\ny${i} · L${i} = ${fmt(p.y)} · ${fmt(basis)} = ${fmt(part)}`
     });
   });
-  steps.push({title:'Итоговое значение',text:'Складываем вклады всех базисных многочленов.',math:`P(${fmt(x)}) = ${points.map((p,i)=>fmt(p.y)).join(' · Lᵢ + ')}\nP(${fmt(x)}) = ${fmt(value)}`});
-  return {
+const sumExpression = points
+  .map((p,i) => `${fmt(p.y)} · L${i}(${fmt(x)})`)
+  .join(' + ');
+
+steps.push({
+  title: 'Итоговое значение',
+  text: 'Складываем вклады всех базисных многочленов.',
+  math: `P(${fmt(x)}) = ${sumExpression}
+P(${fmt(x)}) = ${fmt(value)}`
+});  return {
     value,steps,
     evaluate:t=>points.reduce((sum,p,i)=>{
       let basis=1;
