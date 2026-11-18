@@ -1,20 +1,18 @@
-// Импорт зависимостей
 import { num, fmt, validate } from './interpolation.js';
 import { lagrange } from './lagrange.js';
 import { newton } from './newton.js';
 import { drawGraph } from './graph.js';
 
-// Состояние приложения
 const pointsBody = document.querySelector('#points');
+
 let rows = [
   { x: '', y: '' },
   { x: '', y: '' }
 ];
 
-// Функции рендеринга
 function render() {
   pointsBody.innerHTML = '';
-  
+
   rows.forEach((p, i) => {
     const tr = document.createElement('tr');
     tr.innerHTML = `
@@ -25,7 +23,7 @@ function render() {
     `;
     pointsBody.append(tr);
   });
-  
+
   document.querySelector('#count').textContent = `Точек: ${rows.length} / 12`;
 }
 
@@ -73,14 +71,15 @@ function renderSteps(results) {
   `;
 
   if (window.MathJax) {
-    MathJax.typesetPromise([document.querySelector('#steps')]);
+    MathJax.typesetPromise([
+      document.querySelector('#steps'),
+      document.querySelector('#answers')
+    ]);
   }
 }
 
-// Обработчики событий интерфейса
 document.querySelector('#clear').onclick = () => {
   rows = [{ x: '', y: '' }, { x: '', y: '' }];
-  document.querySelector('#target').value = '';
   render();
   clearResults();
 };
@@ -94,10 +93,12 @@ pointsBody.addEventListener('input', e => {
 
 pointsBody.addEventListener('click', e => {
   if (e.target.dataset.r === undefined) return;
+
   if (rows.length <= 2) {
     document.querySelector('#error').textContent = 'Нужно оставить минимум две точки.';
     return;
   }
+
   rows.splice(+e.target.dataset.r, 1);
   render();
   clearResults();
@@ -108,72 +109,105 @@ document.querySelector('#add').onclick = () => {
     document.querySelector('#error').textContent = 'Максимум 12 точек.';
     return;
   }
+
   rows.push({ x: '', y: '' });
   render();
   clearResults();
 };
 
 document.querySelector('#example').onclick = () => {
-  rows = [{ x: '0', y: '1' }, { x: '1', y: '2' }, { x: '2', y: '5' }];
-  document.querySelector('#target').value = '1,5';
+  rows = [
+    { x: '-2', y: '-0,4' },
+    { x: '-1', y: '-0,7' },
+    { x: '0', y: '-1' },
+    { x: '1', y: '0' },
+    { x: '2', y: '7,4' }
+  ];
+
   render();
   clearResults();
 };
 
-document.querySelector('#target').addEventListener('input', clearResults);
 document.querySelector('#method').addEventListener('change', clearResults);
 
-// Логика вычислений
 document.querySelector('#calculate').onclick = () => {
   const err = document.querySelector('#error');
   err.textContent = '';
 
   try {
-    const points = rows.map(p => ({ x: num(p.x), y: num(p.y) }));
+    const points = rows.map(p => ({
+      x: num(p.x),
+      y: num(p.y)
+    }));
+
     validate(points);
-    
-    const x = num(document.querySelector('#target').value);
+
     const method = document.querySelector('#method').value;
     const results = [];
 
     if (method !== 'newton') {
-      results.push({ name: 'Метод Лагранжа', data: lagrange(points, x) });
-    }
-    if (method !== 'lagrange') {
-      results.push({ name: 'Метод Ньютона', data: newton(points, x) });
+      results.push({
+        name: 'Метод Лагранжа',
+        data: lagrange(points)
+      });
     }
 
-    // Рендеринг карточек с ответами
-    document.querySelector('#answers').innerHTML = results.map(r => `
-      <article class="answer-card">
-        <h3>${r.name}</h3>
-        <div class="muted">Значение в точке X = ${fmt(x)}</div>
-        <div class="value">${fmt(r.data.value)}</div>
-        <p class="answer-detail">Интерполяционный многочлен рассчитан по ${points.length} узлам.</p>
-      </article>
-    `).join('');
+    if (method !== 'lagrange') {
+      results.push({
+        name: 'Метод Ньютона',
+        data: newton(points)
+      });
+    }
+
+    document.querySelector('#answers').innerHTML = results.map(r => {
+      if (r.name === 'Метод Лагранжа') {
+        return `
+          <article class="answer-card">
+            <h3>1. Функция Лагранжа</h3>
+            <div class="math formula-render">
+              \\[\\boxed{L(x)=${r.data.polynomial}}\\]
+            </div>
+          </article>
+        `;
+      }
+
+      return `
+        <article class="answer-card">
+          <h3>2. Функция Ньютона</h3>
+          <p class="muted">В форме с нераскрытыми скобками:</p>
+          <div class="math formula-render">
+            \\[P(x)=${r.data.newtonForm}\\]
+          </div>
+          <p class="muted">В раскрытом виде:</p>
+          <div class="math formula-render">
+            \\[\\boxed{P(x)=${r.data.polynomial}}\\]
+          </div>
+        </article>
+      `;
+    }).join('');
 
     renderSteps(results);
 
-    // Отрисовка графика
     drawGraph(
       document.querySelector('#graph'),
       points,
       results.map(r => ({ ...r.data, name: r.name })),
-      x,
       document.querySelector('#legend')
     );
 
-    // Обновление сводки и прокрутка к результатам
-    document.querySelector('#result-summary').textContent = `Узлов интерполяции: ${points.length} · X = ${fmt(x)}`;
+    document.querySelector('#result-summary').textContent =
+      `Узлов интерполяции: ${points.length}`;
+
     document.querySelector('#results').classList.remove('hidden');
     document.querySelector('#results').scrollIntoView({ behavior: 'smooth' });
 
+    if (window.MathJax) {
+      MathJax.typesetPromise([document.querySelector('#answers')]);
+    }
   } catch (e) {
     err.textContent = e.message;
     document.querySelector('#results').classList.add('hidden');
   }
 };
 
-// Первичная инициализация
 render();

@@ -79,10 +79,6 @@
       
       <div class="controls">
         <label>
-          Точка вычисления X
-          <input id="target" value="" placeholder="Введите X" inputmode="decimal">
-        </label>
-        <label>
           Метод
           <select id="method">
             <option value="both">Сравнить оба метода</option>
@@ -90,7 +86,7 @@
             <option value="newton">Метод Ньютона</option>
           </select>
         </label>
-        <button id="calculate" class="primary">Вычислить</button>
+        <button id="calculate" class="primary">Построить функцию</button>
       </div>
       
       <p id="error" class="error" aria-live="polite"></p>
@@ -101,7 +97,7 @@
       <div class="section-title result-heading">
         <div>
           <p class="eyebrow">РЕЗУЛЬТАТ</p>
-          <h2>Визуализация</h2>
+          <h2>Интерполяционные функции</h2>
         </div>
         <span class="muted" id="result-summary"></span>
       </div>
@@ -111,7 +107,7 @@
           <h3>График интерполяции</h3>
           <div id="graph"></div>
           <div id="legend" class="legend"></div>
-          <p class="graph-note">Кривые двух методов совпадают, поскольку оба способа строят один интерполяционный многочлен.</p>
+          <p class="graph-note">График построен по полученному интерполяционному многочлену.</p>
         </article>
         <div id="answers"></div>
       </div>

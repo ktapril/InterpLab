@@ -1,66 +1,83 @@
 import { validate, fmt } from './interpolation.js';
 
-export function lagrange(points, x) {
-  // Валидация входных данных
+function multiply(a, b) {
+  const result = Array(a.length + b.length - 1).fill(0);
+  a.forEach((v, i) => b.forEach((w, j) => result[i + j] += v * w));
+  return result;
+}
+
+function formatPolynomial(coefficients) {
+  const terms = [];
+
+  coefficients.forEach((coefficient, power) => {
+    if (Math.abs(coefficient) < 0.000005) return;
+
+    const number = Math.abs(coefficient).toFixed(5)
+      .replace(/\.?0+$/, '').replace('.', ',');
+
+    const variable = power === 0 ? '' : power === 1 ? 'x' : `x^${power}`;
+    const term = `${number}${variable}`;
+
+    if (!terms.length) {
+      terms.push(coefficient < 0 ? `-${term}` : term);
+    } else {
+      terms.push(coefficient < 0 ? `- ${term}` : `+ ${term}`);
+    }
+  });
+
+  return terms.join(' ') || '0';
+}
+
+export function lagrange(points) {
   validate(points);
 
-  // Инициализация переменных и начального шага
-  let value = 0;
-  const steps = [
-    {
-      title: 'Формула Лагранжа',
-      text: 'Интерполяционный многочлен представляется как сумма yᵢ · Lᵢ(x). Находим каждый базисный многочлен.'
-    }
-  ];
+  const coefficients = Array(points.length).fill(0);
+  const steps = [{
+    title: 'Формула Лагранжа',
+    text: 'Строим интерполяционный многочлен как сумму базисных многочленов.'
+  }];
 
-  // Вычисление базисных многочленов для каждого узла
   points.forEach((p, i) => {
-    let numerator = 1;
+    let basis = [1];
     let denominator = 1;
-    const factors = [];
 
     points.forEach((q, j) => {
-      if (i !== j) {
-        numerator *= (x - q.x);
-        denominator *= (p.x - q.x);
-        factors.push(`\\frac{(${fmt(x)} - ${fmt(q.x)})}{(${fmt(p.x)} - ${fmt(q.x)})}`);
-      }
+      if (i === j) return;
+
+      basis = multiply(basis, [-q.x, 1]);
+      denominator *= p.x - q.x;
     });
 
-    const basis = numerator / denominator;
-    const part = p.y * basis;
-    value += part;
+    basis = basis.map(v => v / denominator);
+
+    basis.forEach((v, power) => {
+      coefficients[power] += p.y * v;
+    });
+
+    const factors = points
+      .filter((_, j) => i !== j)
+      .map(q => `(x ${q.x < 0 ? '+' : '-'} ${fmt(Math.abs(q.x))})`)
+      .join('');
 
     steps.push({
       title: `Базисный многочлен L${i}(x)`,
-      text: `Для узла x${i} = ${fmt(p.x)} вычисляется произведение отношений.`,
-      math: `L_{${i}}(${fmt(x)}) = ${factors.join(' \\cdot ')} = ${fmt(basis)}\ny_{${i}} \\cdot L_{${i}} = ${fmt(p.y)} \\cdot ${fmt(basis)} = ${fmt(part)}`
+      text: `Строим базис для узла x${i} = ${fmt(p.x)}.`,
+      math: `L_{${i}}(x)=\\frac{${factors || '1'}}{${fmt(denominator)}}`
     });
   });
 
-  // Формирование итоговой суммы
-  const sumExpression = points
-    .map((p, i) => `${fmt(p.y)} \\cdot L_{${i}}(${fmt(x)})`)
-    .join(' + ');
+  const polynomial = formatPolynomial(coefficients);
 
   steps.push({
-    title: 'Итоговое значение',
-    text: 'Складываются вклады всех базисных многочленов.',
-    math: `P(${fmt(x)}) = ${sumExpression}\nP(${fmt(x)}) = ${fmt(value)}`
+    title: 'Итоговая функция Лагранжа',
+    text: 'После раскрытия скобок и приведения подобных слагаемых получаем интерполяционный многочлен.',
+    math: `\\boxed{L(x)=${polynomial}}`
   });
 
-  // Возврат результата и функции для повторного вычисления
   return {
-    value,
+    coefficients,
+    polynomial,
     steps,
-    evaluate: (t) => points.reduce((sum, p, i) => {
-      let basis = 1;
-      points.forEach((q, j) => {
-        if (i !== j) {
-          basis *= (t - q.x) / (p.x - q.x);
-        }
-      });
-      return sum + p.y * basis;
-    }, 0)
+    evaluate: x => coefficients.reduce((sum, c, i) => sum + c * x ** i, 0)
   };
 }
